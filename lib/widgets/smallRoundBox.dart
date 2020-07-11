@@ -3,7 +3,8 @@ import 'package:music_app/utils/constants.dart';
 
 class SmallRoundBox extends StatelessWidget {
   final Icon icon;
-  SmallRoundBox({this.icon});
+  final Function onPressed;
+  SmallRoundBox({this.icon, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -16,12 +17,12 @@ class SmallRoundBox extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               offset: Offset(4, 4),
-              color: Color(0xFFB8C6DD),
+              color: Color(0xFFB6C4DB),
               blurRadius: 10,
               spreadRadius: 5,
             ),
             BoxShadow(
-              offset: Offset(-4, -4),
+              offset: Offset(-5, -5),
               color: Color(0xFFF2FCFF),
               blurRadius: 10,
               spreadRadius: 2,
@@ -33,15 +34,16 @@ class SmallRoundBox extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: kBackgrounColor,
-              boxShadow: [
+             /*  boxShadow: [
                 BoxShadow(
                   color: Color(0xFFF2FCFF),
-                  blurRadius: 2,
-                  spreadRadius: 1,
+                  blurRadius: 12,
+                 // spreadRadius: 1,
                 ),
-              ],
+              ], */
             ),
-            child: icon),
+            child: IconButton(onPressed: onPressed,
+            icon: icon,)),
       ),
     );
   }
