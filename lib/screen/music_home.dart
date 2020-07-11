@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_audio_query/flutter_audio_query.dart';
 import 'package:music_app/models/music_model.dart';
 
 import 'package:music_app/utils/constants.dart';
@@ -12,6 +13,42 @@ class MusicHome extends StatefulWidget {
 
 class _MusicHomeState extends State<MusicHome> {
   String albumTitle = 'FLUME';
+
+  final FlutterAudioQuery audioQuery = FlutterAudioQuery();
+    List<SongInfo> music = [];
+
+ Future<void> getSongsList() async{
+
+    //List<AlbumInfo> albumList = await audioQuery.getAlbums();
+    List<SongInfo> songs = await audioQuery.getSongs();
+
+   // return songs;
+
+   songs.forEach((song) {
+     music.add(song);
+   });
+
+  
+  }
+
+  void songList() async{
+    await getSongsList();
+    print(music.length);
+    setState(() {
+      
+    });
+
+
+
+  }
+
+  @override
+  void initState() {
+       songList(); 
+    super.initState();
+     
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +102,13 @@ class _MusicHomeState extends State<MusicHome> {
       flex: 2,
       child: Container(
       child: ListView.builder(
-        itemCount: musicList.length,
+        itemCount: music.length,
         
-        itemBuilder: (context,index) => MusicCard())
-            ));
+        itemBuilder: (context,index) { 
+          print(music.length);
+        return MusicCard(song: music[index],);
+          })
+        ));
           }
         }
         

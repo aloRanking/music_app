@@ -1,30 +1,99 @@
 import 'dart:async';
 
+import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_audio_query/flutter_audio_query.dart';
 import 'package:music_app/utils/constants.dart';
 import 'package:music_app/widgets/smallRoundBox.dart';
 
 class Nowplaying extends StatefulWidget {
+  final SongInfo song;
+
+  const Nowplaying({Key key, this.song}) : super(key: key);
   @override
   _NowplayingState createState() => _NowplayingState();
 }
 
 class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
   double sliderValue = 0.0;
-  double start = 0.0;
-  double stop = 3.21;
+
+  Duration musicStopDuration = Duration();
+  Duration musicStartDuration = Duration();
+
   AnimationController controller;
   bool isPlaying = false;
+  AudioPlayer audioPlugin;
+  String currentTime = '0:00';
+  String completeTime = '0:00';
+
+  Duration parseDuration(String s) {
+    int hours = 0;
+    int minutes = 0;
+    int micros;
+    List<String> parts = s.split(':');
+    if (parts.length > 2) {
+      hours = int.parse(parts[parts.length - 3]);
+    }
+    if (parts.length > 1) {
+      minutes = int.parse(parts[parts.length - 2]);
+    }
+    micros = (double.parse(parts[parts.length - 1]) * 1000000).round();
+    return Duration(hours: hours, minutes: minutes, microseconds: micros);
+  }
+
+  String songDuration;
 
   @override
   void initState() {
+    initPlayer();
+
     controller = AnimationController(
-        duration: Duration(seconds: 3),
-        lowerBound: start,
-        upperBound: stop,
+        duration: musicStopDuration,
+        upperBound: musicStopDuration.inSeconds.toDouble(),
         vsync: this);
 
+        //sliderValue = controller.value;
+        
+    //controller.forward();
+
     super.initState();
+  }
+
+  void initPlayer() {
+    String songDuration = widget.song.duration;
+    musicStopDuration = parseDuration(songDuration);
+
+    audioPlugin = AudioPlayer();
+    //audioPlugin.play(widget.song.filePath);
+    //print(widget.song);
+    audioPlugin.onAudioPositionChanged.listen((event) {
+      setState(() {
+        // musicStartDuration = audioPlugin.duration;
+        currentTime = event.toString();
+      });
+    });
+
+    audioPlugin.onPlayerStateChanged.listen((s) {
+      if (s == AudioPlayerState.PLAYING) {
+        setState(() {
+          completeTime = audioPlugin.duration.toString();
+         // musicStopDuration = audioPlugin.duration;
+        });
+        
+      } else if (s == AudioPlayerState.STOPPED) {
+        // onComplete();
+        setState(() {
+          currentTime = completeTime;
+        });
+      }
+    });
+  }
+
+  void seekToSecond(int second) {
+    audioPlugin = AudioPlayer();
+    Duration newDuration = Duration(seconds: second);
+
+    audioPlugin.seek(newDuration.inSeconds.toDouble());
   }
 
   @override
@@ -50,9 +119,13 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          SmallRoundBox(icon: Icon(Icons.arrow_back,color: Color(0xFF8D9AAF)),),
+          SmallRoundBox(
+            icon: Icon(Icons.arrow_back, color: Color(0xFF8D9AAF)),
+          ),
           Text('PLAYING NOW', style: TextStyle(color: Colors.grey)),
-          SmallRoundBox(icon: Icon(Icons.menu, color: Color(0xFF8D9AAF)),),
+          SmallRoundBox(
+            icon: Icon(Icons.menu, color: Color(0xFF8D9AAF)),
+          ),
         ],
       ),
     );
@@ -119,14 +192,14 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
   _slider() {
     return Expanded(
       child: Container(
-        margin: EdgeInsets.only(left:20, right:20),
+        margin: EdgeInsets.only(left: 20, right: 20),
         child: Column(
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(left: 15.0, right: 15.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[Text('${controller.value.toStringAsFixed(2)}'), Text('$stop')],
+                children: <Widget>[Text('$currentTime'), Text('$completeTime')],
               ),
             ),
             SliderTheme(
@@ -135,13 +208,14 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
                 thumbShape: RoundSliderThumbShape(),
               ),
               child: Slider(
-                  value: controller.value,
-                  min: start,
-                  max: stop,
+                  value: sliderValue,
+                  min: 0.0,
+                  max: musicStopDuration.inSeconds.toDouble(),
                   onChanged: (double newValue) {
                     setState(() {
-                      controller.value = newValue;
+                      sliderValue = newValue;
                     });
+                    
                   }),
             ),
           ],
@@ -159,7 +233,7 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
           MusicButtons(
             color: kBackgrounColor,
             color2: Color(0xFFE2ECFB),
-            icon: Icon(Icons.fast_rewind,color: Color(0xFF8D9AAF)),
+            icon: Icon(Icons.fast_rewind, color: Color(0xFF8D9AAF)),
           ),
           MusicButtons(
             color: kPauseColor,
@@ -175,6 +249,7 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
                   ),
             onPressed: () {
               if (isPlaying) {
+                audioPlugin.pause();
                 setState(() {
                   isPlaying = false;
                   controller.stop();
@@ -183,17 +258,20 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
                   });
                 });
               } else {
+                audioPlugin.play(widget.song.filePath);
                 setState(() {
                   isPlaying = true;
                   controller.forward();
                   controller.addListener(() {
-                    print(controller.value);
-
-                    setState(() {});
+                    //print(controller.value);
+                    setState(() {
+                      sliderValue = controller.value;
+                       print('the slider value is $sliderValue');
+                    });
                   });
 
                   controller.addStatusListener((status) {
-                    if(status == AnimationStatus.completed){
+                    if (status == AnimationStatus.completed) {
                       isPlaying = false;
                     }
                   });
@@ -201,10 +279,10 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
               }
             },
           ),
-          MusicButtons(color: kBackgrounColor,
-          
-          color2:  Color(0xFFE2ECFB) ,
-           icon: Icon(Icons.fast_forward,color: Color(0xFF8D9AAF))),
+          MusicButtons(
+              color: kBackgrounColor,
+              color2: Color(0xFFE2ECFB),
+              icon: Icon(Icons.fast_forward, color: Color(0xFF8D9AAF))),
         ],
       ),
     );
