@@ -23,8 +23,11 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
   AnimationController controller;
   bool isPlaying = false;
   AudioPlayer audioPlugin;
-  String currentTime = '0:00';
-  String completeTime = '0:00';
+ /*  String currentTime = '0:00';
+  String completeTime = '0:00'; */
+
+  Duration currentTime =Duration();
+   Duration completeTime =Duration();
 
   Duration parseDuration(String s) {
     int hours = 0;
@@ -47,14 +50,7 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
   void initState() {
     initPlayer();
 
-    controller = AnimationController(
-        duration: musicStopDuration,
-        upperBound: musicStopDuration.inSeconds.toDouble(),
-        vsync: this);
-
-        //sliderValue = controller.value;
-        
-    //controller.forward();
+    
 
     super.initState();
   }
@@ -69,14 +65,14 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
     audioPlugin.onAudioPositionChanged.listen((event) {
       setState(() {
         // musicStartDuration = audioPlugin.duration;
-        currentTime = event.toString();
+        currentTime = event;
       });
     });
 
     audioPlugin.onPlayerStateChanged.listen((s) {
       if (s == AudioPlayerState.PLAYING) {
         setState(() {
-          completeTime = audioPlugin.duration.toString();
+          completeTime = audioPlugin.duration;
          // musicStopDuration = audioPlugin.duration;
         });
         
@@ -121,6 +117,9 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
         children: <Widget>[
           SmallRoundBox(
             icon: Icon(Icons.arrow_back, color: Color(0xFF8D9AAF)),
+            onPressed: (){
+              Navigator.pop(context);
+            },
           ),
           Text('PLAYING NOW', style: TextStyle(color: Colors.grey)),
           SmallRoundBox(
@@ -199,7 +198,7 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
               padding: const EdgeInsets.only(left: 15.0, right: 15.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[Text('$currentTime'), Text('$completeTime')],
+                children: <Widget>[Text('${currentTime.toString().split(".")[0]}'), Text('${completeTime.toString().split(".")[0]}')],
               ),
             ),
             SliderTheme(
@@ -208,12 +207,14 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
                 thumbShape: RoundSliderThumbShape(),
               ),
               child: Slider(
-                  value: sliderValue,
+                  value: currentTime.inSeconds.toDouble(),
                   min: 0.0,
-                  max: musicStopDuration.inSeconds.toDouble(),
+                  max: completeTime.inSeconds.toDouble(),
                   onChanged: (double newValue) {
                     setState(() {
-                      sliderValue = newValue;
+                      //seekToSecond(newValue.toInt());
+                     sliderValue= currentTime.inSeconds.toDouble();
+                     sliderValue = newValue;
                     });
                     
                   }),
@@ -252,29 +253,13 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
                 audioPlugin.pause();
                 setState(() {
                   isPlaying = false;
-                  controller.stop();
-                  controller.addListener(() {
-                    setState(() {});
-                  });
+                
                 });
               } else {
                 audioPlugin.play(widget.song.filePath);
                 setState(() {
                   isPlaying = true;
-                  controller.forward();
-                  controller.addListener(() {
-                    //print(controller.value);
-                    setState(() {
-                      sliderValue = controller.value;
-                       print('the slider value is $sliderValue');
-                    });
-                  });
-
-                  controller.addStatusListener((status) {
-                    if (status == AnimationStatus.completed) {
-                      isPlaying = false;
-                    }
-                  });
+                 
                 });
               }
             },
