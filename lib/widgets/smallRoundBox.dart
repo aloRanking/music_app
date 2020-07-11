@@ -41,6 +41,16 @@ class SmallRoundBox extends StatelessWidget {
                  // spreadRadius: 1,
                 ),
               ], */
+              gradient: RadialGradient(
+                colors: [
+                Color(0xFFE4EEFB),
+                Color(0x15EDF7FF)
+              ], 
+              stops: [
+                4,
+                1,
+              ]
+              )
             ),
             child: IconButton(onPressed: onPressed,
             icon: icon,)),

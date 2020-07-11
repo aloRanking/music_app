@@ -26,20 +26,31 @@ class _MusicCardState extends State<MusicCard> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: GestureDetector(
+      child: InkWell(
         onTap: (){
           Navigator.push(context, MaterialPageRoute(builder: (context){
               return Nowplaying(song:widget.song);
           }));
         },
               child: Container(
+                height: 80,
+
+                
           margin: EdgeInsets.only(top: 4),
+          padding: EdgeInsets.all(10),
+
+          decoration: isPlaying? BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+            color: Color(0xFFD2DFF5),
+            
+          ): null,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Flexible(
                             child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(widget.song.title,
                     overflow: TextOverflow.ellipsis,
