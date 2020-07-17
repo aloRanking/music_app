@@ -68,7 +68,7 @@ class _MusicCardState extends State<MusicCard> {
               ),
               SmallRoundBox(
                  
-                icon: Icon(isPlaying ? Icons.stop : Icons.play_arrow,
+                icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow,
                     color: Color(0xFF8D9AAF)),
                     onPressed: (){
                       print('the current filepath ${widget.song.filePath}');
@@ -81,6 +81,7 @@ class _MusicCardState extends State<MusicCard> {
                         
                       } else {
                          audioPlugin.play(widget.song.filePath);
+                        
                         setState(() {
                            isPlaying = true;
                         });
