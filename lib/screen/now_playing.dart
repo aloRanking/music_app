@@ -4,6 +4,8 @@ import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
 import 'package:music_app/utils/constants.dart';
+import 'package:music_app/utils/rounded_tracker.dart';
+import 'package:music_app/widgets/media_player_button.dart';
 import 'package:music_app/widgets/smallRoundBox.dart';
 
 class Nowplaying extends StatefulWidget {
@@ -23,6 +25,7 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
   AnimationController controller;
   bool isPlaying = false;
   AudioPlayer audioPlugin;
+  String songIDuration;
  /*  String currentTime = '0:00';
   String completeTime = '0:00'; */
 
@@ -56,12 +59,17 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
   }
 
   void initPlayer() {
-    String songDuration = widget.song.duration;
+    /* String songDuration = widget.song.duration;
     musicStopDuration = parseDuration(songDuration);
-
+ */
     audioPlugin = AudioPlayer();
-    //audioPlugin.play(widget.song.filePath);
-    //print(widget.song);
+    audioPlugin.play(widget.song.filePath);
+    songIDuration = widget.song.duration;
+    print(widget.song);
+    print(widget.song.duration);
+
+
+    isPlaying = true;
     audioPlugin.onAudioPositionChanged.listen((event) {
       setState(() {
         // musicStartDuration = audioPlugin.duration;
@@ -70,10 +78,11 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
     });
 
     audioPlugin.onPlayerStateChanged.listen((s) {
-      if (s == AudioPlayerState.PLAYING) {
+      if (s == AudioPlayerState.PLAYING ) {   
+
         setState(() {
           completeTime = audioPlugin.duration;
-         // musicStopDuration = audioPlugin.duration;
+         
         });
         
       } else if (s == AudioPlayerState.STOPPED) {
@@ -153,8 +162,24 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
                 spreadRadius: 3,
               ),
             ]),
-        child: Container(),
-      ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+          
+           decoration: BoxDecoration(
+              color: Colors.yellow,
+             shape: BoxShape.circle,
+             image: DecorationImage(
+               image: if (widget.song.albumArtwork == null) {
+                   
+                 } AssetImage(
+                
+               fit: BoxFit.cover)),
+           ),
+          ),
+        ),
+        ),
+      
     );
   }
 
@@ -165,7 +190,7 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
         child: Column(
           children: <Widget>[
             Text(
-              'A Wish',
+              widget.song.title,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -176,7 +201,7 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
               height: 10,
             ),
             Text(
-              'Asa ft, Brymo',
+              widget.song.artist,
               style: TextStyle(
                 fontSize: 16,
                 color: Color(0xFF8D9AAF),
@@ -204,7 +229,8 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
             SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 activeTrackColor: kPauseColor,
-                thumbShape: RoundSliderThumbShape(),
+                //thumbShape: RoundSliderThumbShape(),
+                //trackShape: RoundSliderTrackShape()
               ),
               child: Slider(
                   value: currentTime.inSeconds.toDouble(),
@@ -231,12 +257,12 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          MusicButtons(
+          MediaPlayButton(
             color: kBackgrounColor,
             color2: Color(0xFFE2ECFB),
             icon: Icon(Icons.fast_rewind, color: Color(0xFF8D9AAF)),
           ),
-          MusicButtons(
+          MediaPlayButton(
             color: kPauseColor,
             color2: kPauseColor,
             icon: isPlaying
@@ -264,7 +290,7 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
               }
             },
           ),
-          MusicButtons(
+          MediaPlayButton(
               color: kBackgrounColor,
               color2: Color(0xFFE2ECFB),
               icon: Icon(Icons.fast_forward, color: Color(0xFF8D9AAF))),
@@ -274,63 +300,3 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
   }
 }
 
-class MusicButtons extends StatelessWidget {
-  final Icon icon;
-  final Color color;
-  final Color color2;
-  final Function onPressed;
-
-  MusicButtons({this.icon, this.color, this.color2, this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        height: 100,
-        width: 100,
-        decoration:
-            BoxDecoration(shape: BoxShape.circle, color: color, boxShadow: [
-          BoxShadow(
-            offset: Offset(2, 2),
-            color: Colors.grey,
-            blurRadius: 10,
-            spreadRadius: 3,
-          ),
-          BoxShadow(
-            offset: Offset(-4, -4),
-            color: Colors.white,
-            blurRadius: 10,
-            spreadRadius: 5,
-          )
-        ]),
-        child: Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: Container(
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: color,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey[200],
-                      offset: Offset(-2, -2),
-                      blurRadius: 2,
-                      spreadRadius: 1,
-                    ),
-                    BoxShadow(
-                      color: Colors.grey[200],
-                      offset: Offset(2, 2),
-                      blurRadius: 2,
-                      spreadRadius: 1,
-                    ),
-                  ],
-                  gradient: LinearGradient(colors: [
-                    color,
-                    color2,
-                  ])),
-              child: icon),
-        ),
-      ),
-    );
-  }
-}
