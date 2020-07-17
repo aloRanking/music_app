@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:music_app/utils/constants.dart';
 
 class MediaPlayButton extends StatelessWidget {
   final Icon icon;
@@ -16,46 +17,40 @@ class MediaPlayButton extends StatelessWidget {
         height: 100,
         width: 100,
         decoration:
-            BoxDecoration(shape: BoxShape.circle, color: color, boxShadow: [
+            BoxDecoration(
+              shape: BoxShape.circle, 
+              color: color,
+              border: Border.all(
+                width: 2,
+                color: kBackgrounColor
+              ),
+              
+              
+              boxShadow: [
           BoxShadow(
             offset: Offset(2, 2),
-            color: Colors.grey,
+            color: Color(0xFFB8C6DD),
             blurRadius: 10,
-            spreadRadius: 3,
+            spreadRadius: 5,
           ),
           BoxShadow(
             offset: Offset(-4, -4),
-            color: Colors.white,
+            color: Color(0xFFF2FCFF),
             blurRadius: 10,
-            spreadRadius: 5,
+            spreadRadius: 3,
           )
-        ]),
+        ],
+        gradient: RadialGradient(colors: 
+        [
+          color, color,
+          
+
+        ])),
         child: Padding(
           padding: const EdgeInsets.all(2.0),
-          child: Container(
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: color,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey[200],
-                      offset: Offset(-2, -2),
-                      blurRadius: 2,
-                      spreadRadius: 1,
-                    ),
-                    BoxShadow(
-                      color: Colors.grey[200],
-                      offset: Offset(2, 2),
-                      blurRadius: 2,
-                      spreadRadius: 1,
-                    ),
-                  ],
-                  gradient: LinearGradient(colors: [
-                    color,
-                    color2,
-                  ])),
+          
               child: icon),
-        ),
+        
       ),
     );
   }

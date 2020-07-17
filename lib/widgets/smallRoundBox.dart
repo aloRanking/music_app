@@ -4,58 +4,65 @@ import 'package:music_app/utils/constants.dart';
 class SmallRoundBox extends StatelessWidget {
   final Icon icon;
   final Function onPressed;
-  SmallRoundBox({this.icon, this.onPressed});
+  final bool isActive;
+  SmallRoundBox({this.icon, this.onPressed, this.isActive = false});
 
   @override
   Widget build(BuildContext context) {
+    var Boxdecoration = BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          width: 2,
+          color: isActive ? kDarkBlue : kBackgrounColor,
+        ),
+        boxShadow: [
+          BoxShadow(
+            offset: Offset(4, 4),
+            color: Color(0xFFB6C4DB),
+            blurRadius: 10,
+            spreadRadius: 5,
+          ),
+          BoxShadow(
+            offset: Offset(-5, -5),
+            color: Color(0xFFF2FCFF),
+            blurRadius: 10,
+            spreadRadius: 2,
+          )
+        ],
+        gradient: RadialGradient(
+          colors: [
+            kBackgrounColor,
+            kBackgrounColor,
+            kBackgrounColor,
+            Colors.white.withAlpha(0)
+          ],
+        ));
+
+    if (isActive) {
+      Boxdecoration.copyWith(
+          gradient: RadialGradient(colors: [kLightBlue, kDarkBlue]));
+    } else {
+      Boxdecoration.copyWith(
+          gradient: RadialGradient(
+        colors: [
+          kBackgrounColor,
+          kBackgrounColor,
+          kBackgrounColor,
+          Colors.white.withAlpha(0)
+        ],
+      ));
+    }
     return Container(
       height: 50,
       width: 50,
-      decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: kBackgrounColor,
-          boxShadow: [
-            BoxShadow(
-              offset: Offset(4, 4),
-              color: Color(0xFFB6C4DB),
-              blurRadius: 10,
-              spreadRadius: 5,
-            ),
-            BoxShadow(
-              offset: Offset(-5, -5),
-              color: Color(0xFFF2FCFF),
-              blurRadius: 10,
-              spreadRadius: 2,
-            )
-          ]),
-      child: Padding(
-        padding: const EdgeInsets.all(1.0),
-        child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: kBackgrounColor,
-             /*  boxShadow: [
-                BoxShadow(
-                  color: Color(0xFFF2FCFF),
-                  blurRadius: 12,
-                 // spreadRadius: 1,
-                ),
-              ], */
-              gradient: RadialGradient(
-                colors: [
-                Color(0xFFE4EEFB),
-                Color(0x15EDF7FF)
-              ], 
-              stops: [
-                4,
-                1,
-              ]
-              )
-            ),
-            child: IconButton(onPressed: onPressed,
-            icon: icon,)),
+      decoration: Boxdecoration,
+      child: FlatButton(
+        padding: EdgeInsets.all(0),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(200))),
+        onPressed: onPressed,
+        child: icon,
       ),
     );
   }
 }
-

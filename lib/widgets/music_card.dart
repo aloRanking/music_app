@@ -20,77 +20,136 @@ class MusicCard extends StatefulWidget {
 
 class _MusicCardState extends State<MusicCard> {
   bool isPlaying = false;
-   AudioPlayer audioPlugin = AudioPlayer();
+  AudioPlayer audioPlugin = AudioPlayer();
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InkWell(
-        onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context){
-              return Nowplaying(song:widget.song);
+        onTap: () {
+          if (audioPlugin != null) {
+            audioPlugin.stop();
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return Nowplaying(song: widget.song);
           }));
+            
+          } else {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return Nowplaying(song: widget.song);
+          }));
+          }
+          
         },
-              child: Container(
-                height: 80,
-
-                
+        child: Container(
+          height: 80,
           margin: EdgeInsets.only(top: 4),
           padding: EdgeInsets.all(10),
-
-          decoration: isPlaying? BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-            color: Color(0xFFD2DFF5),
-            
-          ): null,
+          decoration: isPlaying
+              ? BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                  color: kActiveColor,
+                )
+              : null,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Flexible(
-                            child: Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text(widget.song.title,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: kGreyColor,
-                    ),),
-                    Text(widget.song.artist,
-                     style: TextStyle(
-                      fontSize: 16,
-                      color: kGreyColor,
-                    ),),
+                    Text(
+                      widget.song.title,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: kGreyColor,
+                      ),
+                    ),
+                    Text(
+                      widget.song.artist,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: kGreyColor,
+                      ),
+                    ),
                   ],
                 ),
               ),
               SmallRoundBox(
-                 
                 icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow,
                     color: Color(0xFF8D9AAF)),
-                    onPressed: (){
-                      print('the current filepath ${widget.song.filePath}');
-                      if (isPlaying) {
-                         audioPlugin.stop();
-                        setState(() {                        
-                          isPlaying = false;                   
+                    isActive: isPlaying,
+                onPressed: () {
 
-                        });
+                  if (isPlaying) {
+                    audioPlugin.pause();
+                    setState(() {
+                      isPlaying = false;
+                    });
+                    
+                  } else {
+                    //audioPlugin.stop();
+                    audioPlugin.play(widget.song.filePath);
+                    setState(() {
+                      isPlaying = true;
+                    });
+
+                  }
+
+                  
+
+                 /*  audioPlugin.play(widget.song.filePath);
+
+                  audioPlugin.onPlayerStateChanged.listen((event) {
+                    if(event == AudioPlayerState.PLAYING){
+
+                      
+                      print('playinnng');
+                    
+
+
+                    }else if (event == AudioPlayerState.PAUSED) {
+
+                      setState(() {
+                      isPlaying = false;
+                    });
+                      
+                    }
+                  });
+
+ */
+
+
+                  //print('the current filepath ${widget.song.filePath}');
+                   /*  if (audioPlugin.state ==  AudioPlayerState.STOPPED) {
+                    audioPlugin.play(widget.song.filePath);
+                    
+                    print('Stopp state');
+                    print('the playing state ${audioPlugin.state}');
+                      setState(() {
                         
-                      } else {
-                         audioPlugin.play(widget.song.filePath);
-                        
-                        setState(() {
-                           isPlaying = true;
-                        });
-                       
-                        
-                        
-                      }
-                    },
+                      isPlaying = true;
+                    });
+                    
+                  }else if (audioPlugin.state ==  AudioPlayerState.PLAYING) {
+                     audioPlugin.pause();
+                      setState(() {
+                      isPlaying = true;
+                    });
+                  }  else {
+                    audioPlugin.play(widget.song.filePath);
+                     print('playing state');
+                    setState(() {
+                      isPlaying = false;
+                    });
+                  }  */
                    
+
+                   
+                  
+                },
               )
             ],
           ),

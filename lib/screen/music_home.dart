@@ -54,17 +54,17 @@ class _MusicHomeState extends State<MusicHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgrounColor,
-      body: SafeArea(
-          child: Container(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          children: <Widget>[
-            _albumTitle(),
-            _centerCircle(),
-            _musicList(),
-          ],
-        ),
-      )),
+      body: Stack(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              _albumTitle(),
+              _centerCircle(),
+              _musicList(),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -116,6 +116,7 @@ class _MusicHomeState extends State<MusicHome> {
 class CenterCircle extends StatelessWidget {
   final double height;
   final double width;
+
   const CenterCircle({
     Key key,
     this.height,
@@ -129,7 +130,10 @@ class CenterCircle extends StatelessWidget {
       width: width,
       decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: kBackgrounColor,
+          border: Border.all(
+            width: 5,
+            color: kBackgrounColor ),
+          //color: kBackgrounColor,
           boxShadow: [
             BoxShadow(
               offset: Offset(4, 4),
@@ -143,7 +147,11 @@ class CenterCircle extends StatelessWidget {
               blurRadius: 15,
               spreadRadius: 3,
             ),
-          ]),
+          ],
+          
+          gradient: RadialGradient(colors: [
+            kBackgrounColor,kBackgrounColor,kBackgrounColor, Colors.white.withAlpha(0)
+          ])),
       child: Container(),
     );
   }

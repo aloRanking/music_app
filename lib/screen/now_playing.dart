@@ -61,15 +61,20 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
   void initPlayer() {
     /* String songDuration = widget.song.duration;
     musicStopDuration = parseDuration(songDuration);
+
  */
-    audioPlugin = AudioPlayer();
+
+  audioPlugin = AudioPlayer();
     audioPlugin.play(widget.song.filePath);
-    songIDuration = widget.song.duration;
+    /* songIDuration = widget.song.duration;
     print(widget.song);
     print(widget.song.duration);
-
-
+ */
     isPlaying = true;
+
+  
+  
+    
     audioPlugin.onAudioPositionChanged.listen((event) {
       setState(() {
         // musicStartDuration = audioPlugin.duration;
@@ -140,14 +145,12 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
   }
 
   Widget _centerCircle() {
-    return Expanded(
-      flex: 3,
-      child: Container(
-        height: 300,
-        width: 300,
-        decoration: BoxDecoration(
+    var Boxdecoration = BoxDecoration(
             shape: BoxShape.circle,
-            color: kBackgrounColor,
+            border: Border.all(
+              width: 2,
+              color: kBackgrounColor,
+            ),
             boxShadow: [
               BoxShadow(
                 offset: Offset(7, 7),
@@ -161,26 +164,27 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
                 blurRadius: 15,
                 spreadRadius: 3,
               ),
-            ]),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-          
-           decoration: BoxDecoration(
-              color: Colors.yellow,
-             shape: BoxShape.circle,
-             image: DecorationImage(
-               image: if (widget.song.albumArtwork == null) {
-                   
-                 } AssetImage(
-                
-               fit: BoxFit.cover)),
-           ),
-          ),
-        ),
-        ),
+            ]);
+            if (widget.song.albumArtwork !=null) {
+              Boxdecoration.copyWith(
+                image: DecorationImage(
+                  image: AssetImage(widget.song.albumArtwork))
+              );
+              
+            }else{
+              Boxdecoration.copyWith(
+                color: kPauseColor
+              );
+            }
+    return Expanded(
+      flex: 3,
+      child: Container(
+        height: 300,
+        width: 300,
+        decoration: Boxdecoration,
+        
       
-    );
+    ));
   }
 
   Widget _musicTitle() {
