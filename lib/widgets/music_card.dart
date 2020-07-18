@@ -79,7 +79,7 @@ class _MusicCardState extends State<MusicCard> {
               ),
               SmallRoundBox(
                 icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow,
-                    color: Color(0xFF8D9AAF)),
+                    color: isPlaying? Colors.white : Color(0xFF8D9AAF)),
                     isActive: isPlaying,
                 onPressed: () {
 
