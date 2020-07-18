@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
+import 'package:music_app/screen/music_home.dart';
 import 'package:music_app/utils/constants.dart';
 import 'package:music_app/utils/rounded_tracker.dart';
+import 'package:music_app/widgets/center_circle.dart';
 import 'package:music_app/widgets/media_player_button.dart';
 import 'package:music_app/widgets/smallRoundBox.dart';
 
@@ -114,7 +116,7 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
         child: Column(
           children: <Widget>[
             _customAppber(),
-            _centerCircle(),
+            CustomCenterCircle(songInfo: widget.song.albumArtwork ),
             _musicTitle(),
             _slider(),
             _musicButtons(),
@@ -144,48 +146,7 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
     );
   }
 
-  Widget _centerCircle() {
-    var Boxdecoration = BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              width: 2,
-              color: kBackgrounColor,
-            ),
-            boxShadow: [
-              BoxShadow(
-                offset: Offset(7, 7),
-                color: Color(0xFFB8C6DD),
-                blurRadius: 15,
-                spreadRadius: 10,
-              ),
-              BoxShadow(
-                offset: Offset(-4, -4),
-                color: Color(0xFFF2FCFF),
-                blurRadius: 15,
-                spreadRadius: 3,
-              ),
-            ]);
-            if (widget.song.albumArtwork !=null) {
-              Boxdecoration.copyWith(
-                image: DecorationImage(
-                  image: AssetImage(widget.song.albumArtwork))
-              );
-              
-            }else{
-              Boxdecoration.copyWith(
-                color: kPauseColor
-              );
-            }
-    return Expanded(
-      flex: 3,
-      child: Container(
-        height: 300,
-        width: 300,
-        decoration: Boxdecoration,
-        
-      
-    ));
-  }
+  
 
   Widget _musicTitle() {
     return Expanded(
