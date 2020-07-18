@@ -34,15 +34,16 @@ class SmallRoundBox extends StatelessWidget {
             kBackgrounColor,
             kBackgrounColor,
             kBackgrounColor,
-            Colors.white.withAlpha(0)
+            Colors.white54
           ],
+          
         ));
 
     if (isActive) {
-      Boxdecoration.copyWith(
+      Boxdecoration=Boxdecoration.copyWith(
           gradient: RadialGradient(colors: [kLightBlue, kDarkBlue]));
     } else {
-      Boxdecoration.copyWith(
+      Boxdecoration = Boxdecoration.copyWith(
           gradient: RadialGradient(
         colors: [
           kBackgrounColor,
