@@ -54,18 +54,40 @@ class _MusicHomeState extends State<MusicHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgrounColor,
-      body: Stack(
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              _albumTitle(),
-              _centerCircle(),
-              _musicList(),
-            ],
-          ),
-        ],
+      body: SafeArea(
+              child: Stack(
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                _albumTitle(),
+                _centerCircle(),
+                _musicList(),
+              ],
+            ),
+            _buildBottomGradient()
+          ],
+        ),
       ),
     );
+  }
+
+  Align _buildBottomGradient() {
+    return Align(
+            alignment: Alignment.bottomCenter,
+            
+                      child: Container(
+              height: 100,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  kBackgrounColor.withAlpha(0), kBackgrounColor
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter
+                
+                )
+              ),
+            ),
+          );
   }
 
   _albumTitle() {
@@ -73,8 +95,9 @@ class _MusicHomeState extends State<MusicHome> {
       children: <Widget>[
         SizedBox(height: 15,),
         Text(
-            'SKIN - $albumTitle',
+            'SKIN ',
             style: TextStyle(
+              color: kGreyColor,
         fontSize: 18,
         fontWeight: FontWeight.bold,
             ),
@@ -103,6 +126,7 @@ class _MusicHomeState extends State<MusicHome> {
       child: Container(
       child: ListView.builder(
         itemCount: music.length,
+        physics: BouncingScrollPhysics(),
         
         itemBuilder: (context,index) { 
           print(music.length);
