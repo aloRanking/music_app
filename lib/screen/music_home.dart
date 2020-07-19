@@ -174,9 +174,11 @@ class CenterCircle extends StatelessWidget {
           ],
           
           gradient: RadialGradient(colors: [
-            kBackgrounColor,kBackgrounColor,kBackgrounColor, Colors.white.withAlpha(0)
-          ])),
-      child: Container(),
+            kBackgrounColor,kBackgrounColor,kBackgrounColor, Colors.white54.withAlpha(0)
+          ]),
+      image: DecorationImage(image: AssetImage('images/rose.jpg'), fit: BoxFit.cover)
+      ),
+
     );
   }
 }

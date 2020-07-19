@@ -29,7 +29,7 @@ class _MusicCardState extends State<MusicCard> {
       child: InkWell(
         onTap: () {
           if (audioPlugin != null) {
-            audioPlugin.stop();
+            //audioPlugin.stop();
             Navigator.push(context, MaterialPageRoute(builder: (context) {
             return Nowplaying(song: widget.song);
           }));
