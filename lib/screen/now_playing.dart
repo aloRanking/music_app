@@ -27,6 +27,9 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
   AnimationController controller;
   bool isPlaying = false;
   AudioPlayer audioPlugin;
+
+  StreamSubscription<AudioPlayerState> _audioPlayerStateSubscription;
+  StreamSubscription<Duration> _positionSubscription;
   String songIDuration;
  /*  String currentTime = '0:00';
   String completeTime = '0:00'; */
@@ -74,18 +77,19 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
  */
     isPlaying = true;
 
-  
-  
-    
-    audioPlugin.onAudioPositionChanged.listen((event) {
+
+
+
+  _positionSubscription = audioPlugin.onAudioPositionChanged.listen((event) {
       setState(() {
         // musicStartDuration = audioPlugin.duration;
         currentTime = event;
       });
     });
 
-    audioPlugin.onPlayerStateChanged.listen((s) {
-      if (s == AudioPlayerState.PLAYING ) {   
+  _audioPlayerStateSubscription = audioPlugin.onPlayerStateChanged.listen((s) {
+      if (s == AudioPlayerState.PLAYING ) {
+
 
         setState(() {
           completeTime = audioPlugin.duration;
@@ -99,6 +103,15 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _audioPlayerStateSubscription.cancel();
+    _positionSubscription.cancel();
+
+    super.dispose();
   }
 
   void seekToSecond(int second) {
