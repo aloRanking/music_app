@@ -32,78 +32,82 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
   StreamSubscription<AudioPlayerState> _audioPlayerStateSubscription;
   StreamSubscription<Duration> _positionSubscription;
   String songIDuration;
- /*  String currentTime = '0:00';
+  /*  String currentTime = '0:00';
   String completeTime = '0:00'; */
 
-  Duration currentTime =Duration();
-   Duration completeTime =Duration();
+  Duration currentTime = Duration();
+  Duration completeTime = Duration();
 
-   int currentIndexOfMusic = 0;
+  int currentIndexOfMusic = 0;
 
   final FlutterAudioQuery audioQuery = FlutterAudioQuery();
   List<SongInfo> music = [];
 
+  Future<void> getSongsList() async {
 
-
-  Future<void> getSongsList() async{
-
-    //List<AlbumInfo> albumList = await audioQuery.getAlbums();
     List<SongInfo> songs = await audioQuery.getSongs();
 
     // return songs;
 
-    songs.forEach((song) {
-      music.add(song);
+   songs.forEach((song) {
+       music.add(song);
     });
 
     setState(() {
-
+      currentIndexOfMusic = widget.index;
     });
 
 
+    initPlayer();
+
+    return songs;
   }
 
   @override
   void initState() {
-    initPlayer();
-    getSongsList();
-    currentIndexOfMusic = widget.index;
 
-    
+    getSongsList();
+
+
+
+
+  // initPlayer();
 
     super.initState();
   }
 
   void initPlayer() {
+     
 
+     
 
-  audioPlugin = AudioPlayer();
+    audioPlugin = AudioPlayer();
     audioPlugin.play(widget.song.filePath);
     isPlaying = true;
 
-
-
-
-
-  _positionSubscription = audioPlugin.onAudioPositionChanged.listen((event) {
+    _positionSubscription = audioPlugin.onAudioPositionChanged.listen((event) {
       setState(() {
         currentTime = event;
-        sliderValue= currentTime.inSeconds.toDouble();
+        sliderValue = currentTime.inSeconds.toDouble();
       });
     });
 
-  _audioPlayerStateSubscription = audioPlugin.onPlayerStateChanged.listen((s) {
-      if (s == AudioPlayerState.PLAYING ) {
-
-
+    _audioPlayerStateSubscription =
+        audioPlugin.onPlayerStateChanged.listen((s) {
+      if (s == AudioPlayerState.PLAYING) {
         setState(() {
           completeTime = audioPlugin.duration;
-         
         });
-        
+      } else if (s == AudioPlayerState.COMPLETED) {
+        print('complete state');
+
+        /* setState(() {
+          onComplete();
+        }); */
+
       } else if (s == AudioPlayerState.STOPPED) {
         print('stop state');
-         onComplete();
+
         setState(() {
           currentTime = completeTime;
         });
@@ -111,9 +115,14 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
     });
   }
 
+  void play() async{
+    await getSongsList();
+    initPlayer();
+  }
+
   @override
   void dispose() {
-    // TODO: implement dispose
+    
     _audioPlayerStateSubscription.cancel();
     _positionSubscription.cancel();
 
@@ -124,43 +133,32 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
     audioPlugin = AudioPlayer();
     //convert the sliders value to duration
     Duration newDuration = Duration(seconds: second);
-
-
     audioPlugin.seek(newDuration.inSeconds.toDouble());
 
     _positionSubscription = audioPlugin.onAudioPositionChanged.listen((event) {
       setState(() {
         currentTime = event;
-        sliderValue= currentTime.inSeconds.toDouble();
+        sliderValue = currentTime.inSeconds.toDouble();
       });
     });
-
 
     setState(() {
       Duration newDuration = Duration(seconds: sliderValue.toInt());
       currentTime = newDuration;
       sliderValue = currentTime.inSeconds.toDouble();
-
-
     });
     // to keep the slider moving after the slider is move to a new position
     audioPlugin.play(music[currentIndexOfMusic].filePath);
-
-
-
-
-
   }
 
   void onComplete() {
-    if(currentIndexOfMusic < music.length){
+    if (currentIndexOfMusic < music.length) {
+      audioPlugin.stop();
       setState(() {
         currentIndexOfMusic++;
         audioPlugin.play(music[currentIndexOfMusic].filePath);
       });
-
-    }
-    else{
+    } else {
       return;
     }
   }
@@ -169,18 +167,26 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgrounColor,
-      body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            _customAppber(),
-            CustomCenterCircle(songInfo:  music[currentIndexOfMusic].albumArtwork ),
-            _musicTitle(),
-            _slider(),
-            _musicButtons(),
-          ],
+      body:      
+              SafeArea(
+          child:  Column(
+                  children: <Widget>[
+                    _customAppber(),
+                    CustomCenterCircle(
+                        songInfo: music[currentIndexOfMusic].albumArtwork),
+                    _musicTitle( ),
+                    _slider(),
+                    _musicButtons(),
+                  ],
+
+
+
+
+
         ),
-      ),
-    );
+    ),
+             
+      );
   }
 
   Widget _customAppber() {
@@ -190,7 +196,7 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
         children: <Widget>[
           SmallRoundBox(
             icon: Icon(Icons.arrow_back, color: Color(0xFF8D9AAF)),
-            onPressed: (){
+            onPressed: () {
               Navigator.pop(context);
             },
           ),
@@ -203,20 +209,22 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
     );
   }
 
-  
-
-  Widget _musicTitle() {
+  Widget _musicTitle({SongInfo song}) {
     return Expanded(
       child: Container(
         margin: EdgeInsets.only(top: 25),
         child: Column(
           children: <Widget>[
-            Text(
-              music[currentIndexOfMusic].title,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF8D9AAF),
+            Flexible(
+              child: Text(
+                music[currentIndexOfMusic].title,
+                softWrap: true,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF8D9AAF),
+                ),
               ),
             ),
             SizedBox(
@@ -245,7 +253,10 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
               padding: const EdgeInsets.only(left: 15.0, right: 15.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[Text('${currentTime.toString().split(".")[0]}'), Text('${completeTime.toString().split(".")[0]}')],
+                children: <Widget>[
+                  Text('${currentTime.toString().split(".")[0]}'),
+                  Text('${completeTime.toString().split(".")[0]}')
+                ],
               ),
             ),
             SliderTheme(
@@ -265,7 +276,6 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
 
                       sliderValue = newValue;
                     });
-                    
                   }),
             ),
           ],
@@ -281,23 +291,24 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           MediaPlayButton(
-            color: kBackgrounColor,
-            color2: Color(0xFFE2ECFB),
-            icon: Icon(Icons.fast_rewind, color: Color(0xFF8D9AAF),
-            ),
-    onPressed: () {
-      audioPlugin.stop();
-      if (currentIndexOfMusic <= 0) {
-        return;
-      } else {
-        setState(() {
-          currentIndexOfMusic--;
-          audioPlugin.play(music[currentIndexOfMusic].filePath);
-        });
-
-      }
-    }
-          ),
+              color: kBackgrounColor,
+              color2: Color(0xFFE2ECFB),
+              icon: Icon(
+                Icons.fast_rewind,
+                color: Color(0xFF8D9AAF),
+              ),
+              onPressed: () {
+                audioPlugin.stop();
+                if (currentIndexOfMusic <= 0) {
+                  return;
+                } else {
+                  setState(() {
+                    currentIndexOfMusic--;
+                    audioPlugin.play(music[currentIndexOfMusic].filePath);
+                    isPlaying = true;
+                  });
+                }
+              }),
           MediaPlayButton(
             color: kPauseColor,
             color2: kPauseColor,
@@ -315,38 +326,34 @@ class _NowplayingState extends State<Nowplaying> with TickerProviderStateMixin {
                 audioPlugin.pause();
                 setState(() {
                   isPlaying = false;
-                
                 });
               } else {
                 audioPlugin.play(widget.song.filePath);
                 setState(() {
                   isPlaying = true;
-                 
                 });
               }
             },
           ),
           MediaPlayButton(
-              color: kBackgrounColor,
-              color2: Color(0xFFE2ECFB),
-              icon: Icon(Icons.fast_forward, color: Color(0xFF8D9AAF)),
-          onPressed: (){
-                audioPlugin.stop();
-                if(currentIndexOfMusic >= music.length-1){
-                  return;
-                }else {
-                  setState(() {
-                    currentIndexOfMusic++;
-                    audioPlugin.play(music[currentIndexOfMusic].filePath);
-                  });
-                }
-
-          },),
+            color: kBackgrounColor,
+            color2: Color(0xFFE2ECFB),
+            icon: Icon(Icons.fast_forward, color: Color(0xFF8D9AAF)),
+            onPressed: () {
+              audioPlugin.stop();
+              if (currentIndexOfMusic >= music.length - 1) {
+                return;
+              } else {
+                setState(() {
+                  currentIndexOfMusic++;
+                  audioPlugin.play(music[currentIndexOfMusic].filePath);
+                  isPlaying = true;
+                });
+              }
+            },
+          ),
         ],
       ),
     );
   }
-
-
 }
-
