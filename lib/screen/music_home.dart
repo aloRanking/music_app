@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
 import 'package:music_app/models/music_model.dart';
+import 'package:music_app/utils/InheritedMusicList.dart';
 
 import 'package:music_app/utils/constants.dart';
+import 'package:music_app/widgets/center_circle.dart';
 import 'package:music_app/widgets/music_card.dart';
 import 'package:music_app/widgets/smallRoundBox.dart';
 
@@ -16,6 +18,8 @@ class _MusicHomeState extends State<MusicHome> {
 
   final FlutterAudioQuery audioQuery = FlutterAudioQuery();
     List<SongInfo> music = [];
+
+    bool isPlaying = false;
 
  Future<void> getSongsList() async{
 
@@ -61,10 +65,17 @@ class _MusicHomeState extends State<MusicHome> {
               children: <Widget>[
                 _albumTitle(),
                 _centerCircle(),
-                _musicList(),
+
+
+        _musicList(),
+
+
+
+
               ],
             ),
-            _buildBottomGradient()
+            _buildBottomGradient(),
+            //_buildNowPlaying(),
           ],
         ),
       ),
@@ -121,6 +132,8 @@ class _MusicHomeState extends State<MusicHome> {
   }
 
   _musicList() {
+
+   //final data = InheritedMusicList.of(context);
     return Expanded(
       flex: 2,
       child: Container(
@@ -130,10 +143,172 @@ class _MusicHomeState extends State<MusicHome> {
         
         itemBuilder: (context,index) { 
           print(music.length);
-        return MusicCard(song: music[index],);
+        return MusicCard(song: music[index], index: index, );
           })
         ));
           }
+
+ /* _buildNowPlaying(BuildContext context) {
+    final data = InheritedMusicList.of(context).data;
+
+    return Scaffold(
+      backgroundColor: kBackgrounColor,
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+            _customAppber(),
+            CustomCenterCircle(songInfo: data.song.albumArtwork ),
+            _musicTitle(),
+            _slider(),
+            _musicButtons(),
+          ],
+        ),
+      ),
+    );
+
+
+
+
+
+  }*/
+
+ /* Widget _customAppber() {
+    return Expanded(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          SmallRoundBox(
+            icon: Icon(Icons.arrow_back, color: Color(0xFF8D9AAF)),
+            onPressed: (){
+              Navigator.pop(context);
+            },
+          ),
+          Text('PLAYING NOW', style: TextStyle(color: Colors.grey)),
+          SmallRoundBox(
+            icon: Icon(Icons.menu, color: Color(0xFF8D9AAF)),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+  Widget _musicTitle() {
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.only(top: 25),
+        child: Column(
+          children: <Widget>[
+            Text(
+              widget.song.title,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF8D9AAF),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Text(
+              widget.song.artist,
+              style: TextStyle(
+                fontSize: 16,
+                color: Color(0xFF8D9AAF),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  _slider() {
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.only(left: 20, right: 20),
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[Text('${currentTime.toString().split(".")[0]}'), Text('${completeTime.toString().split(".")[0]}')],
+              ),
+            ),
+            SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                activeTrackColor: kPauseColor,
+                //thumbShape: RoundSliderThumbShape(),
+                //trackShape: RoundSliderTrackShape()
+              ),
+              child: Slider(
+                  value: currentTime.inSeconds.toDouble(),
+                  min: 0.0,
+                  max: completeTime.inSeconds.toDouble(),
+                  onChanged: (double newValue) {
+                    setState(() {
+                      //seekToSecond(newValue.toInt());
+                      sliderValue= currentTime.inSeconds.toDouble();
+                      sliderValue = newValue;
+                    });
+
+                  }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _musicButtons() {
+    return Expanded(
+      flex: 2,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          MediaPlayButton(
+            color: kBackgrounColor,
+            color2: Color(0xFFE2ECFB),
+            icon: Icon(Icons.fast_rewind, color: Color(0xFF8D9AAF)),
+          ),
+          MediaPlayButton(
+            color: kPauseColor,
+            color2: kPauseColor,
+            icon: isPlaying
+                ? Icon(
+              Icons.pause,
+              color: Colors.white,
+            )
+                : Icon(
+              Icons.play_arrow,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              if (isPlaying) {
+                audioPlugin.pause();
+                setState(() {
+                  isPlaying = false;
+
+                });
+              } else {
+                audioPlugin.play(widget.song.filePath);
+                setState(() {
+                  isPlaying = true;
+
+                });
+              }
+            },
+          ),
+          MediaPlayButton(
+              color: kBackgrounColor,
+              color2: Color(0xFFE2ECFB),
+              icon: Icon(Icons.fast_forward, color: Color(0xFF8D9AAF))),
+        ],
+      ),
+    );
+  }*/
         }
         
        

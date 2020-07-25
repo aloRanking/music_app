@@ -9,9 +9,11 @@ import 'package:music_app/widgets/smallRoundBox.dart';
 
 class MusicCard extends StatefulWidget {
   final SongInfo song;
+  final int index;
   const MusicCard({
     Key key,
     this.song,
+    this.index
   }) : super(key: key);
 
   @override
@@ -28,15 +30,18 @@ class _MusicCardState extends State<MusicCard> {
       padding: const EdgeInsets.all(8.0),
       child: InkWell(
         onTap: () {
+         /* setState(() {
+            isPlaying = !isPlaying;
+          });*/
           if (audioPlugin != null) {
-            //audioPlugin.stop();
+            audioPlugin.stop();
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return Nowplaying(song: widget.song);
+            return Nowplaying(song: widget.song, index: widget.index,);
           }));
             
           } else {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return Nowplaying(song: widget.song);
+            return Nowplaying(song: widget.song, index: widget.index);
           }));
           }
           
@@ -83,7 +88,7 @@ class _MusicCardState extends State<MusicCard> {
                     isActive: isPlaying,
                 onPressed: () {
 
-                  if (isPlaying) {
+                 /* if (isPlaying) {
                     audioPlugin.pause();
                     setState(() {
                       isPlaying = false;
@@ -96,7 +101,7 @@ class _MusicCardState extends State<MusicCard> {
                       isPlaying = true;
                     });
 
-                  }
+                  }*/
 
                   
 

@@ -37,7 +37,7 @@ class CustomCenterCircle extends StatelessWidget {
              */);
            
             if (songInfo !=null) {
-              print('the album work is $songInfo');
+             
               boxDecoration = boxDecoration.copyWith(
                 image: DecorationImage(
                   image: ExactAssetImage(songInfo), fit: BoxFit.cover)
